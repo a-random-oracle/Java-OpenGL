@@ -1,14 +1,24 @@
 package main;
 
+import scenes.Scene;
+import scenes.TitleScene;
+
 import jog.window;
+import jog.window.WindowMode;
 import jog.graphics;
 import jog.input;
-import jog.window.WindowMode;
+import jog.input.InputEventHandler;
 
-public class Main implements jog.input.InputEventHandler {
+/**
+ * Creates an instance of the game, and handles it's execution.
+ */
+public class Main implements InputEventHandler {
 	
 	/** The game title */
-	private static final String TITLE = "Fly Hard With A Vengence";
+	private static final String TITLE = "Fly Hard";
+	
+	/** The current scene */
+	private Scene currentScene;
 
 	
 	/**
@@ -31,7 +41,9 @@ public class Main implements jog.input.InputEventHandler {
 		setUpWindow();
 		
 		// Do the update and render loop
-		while (!jog.window.isClosed()) {
+		// Note: currentScene must be set by this point to enable us to detect
+		// when the game has been closed
+		while (currentScene != null) {
 			update();
 			render();
 		}
@@ -50,19 +62,16 @@ public class Main implements jog.input.InputEventHandler {
 	 * Sets up the game window.
 	 */
 	private void setUpWindow() {
-		// The values here are arbitrary - they will never be seen
-		// EXCEPT the FPS, which is set to 60 (the standard for such games)
-		window.initialise(TITLE, 500, 500, 60);
-		
-		// Force the game to be full-screen, without any border
-		window.setMode(WindowMode.BORDERLESS_FULLSCREEN);
-		
-		// The window is full-screen, so it shouldn't be resizable
-		window.setResizable(false);
+		// Creates a full-screen window with resizing disabled
+		window.initialise(TITLE, 0, 0, 60,
+				WindowMode.BORDERLESS_FULLSCREEN, false);
 		
 		// Initialise the window's graphics - necessary to start rendering
 		// the game's graphics
 		graphics.initialise();
+		
+		// Set up the first scene
+		currentScene = new TitleScene();
 	}
 	
 	/**
@@ -76,6 +85,9 @@ public class Main implements jog.input.InputEventHandler {
 		// This is done second so that the results of processing
 		// the detected inputs are displayed immediately
 		window.update();
+		
+		// Update the current scene (provided that a scene exists)
+		if (currentScene != null) currentScene.update();
 	}
 	
 	/**
@@ -84,36 +96,55 @@ public class Main implements jog.input.InputEventHandler {
 	private void render() {
 		// Start by clearing the graphics
 		graphics.clear();
+		
+		// Render the current scene
+		if (currentScene != null) currentScene.render();
 	}
 	
 	/**
 	 * Routes mouse presses to the current scene.
 	 */
 	@Override
-	public void mousePressed(int key, int x, int y) {}
+	public void mousePressed(int key, int x, int y) {
+		if (currentScene != null) currentScene.mousePressed(key, x, y);
+	}
 
 	/**
 	 * Routes mouse releases to the current scene.
 	 */
 	@Override
-	public void mouseReleased(int key, int x, int y) {}
+	public void mouseReleased(int key, int x, int y) {
+		if (currentScene != null) currentScene.mouseReleased(key, x, y);
+	}
 
 	/**
 	 * Routes key presses to the current scene.
 	 */
 	@Override
-	public void keyPressed(int key) {}
+	public void keyPressed(int key) {
+		switch (key) {
+		case (input.KEY_ESCAPE):
+			// If the escape key is pressed, close the current scene
+			// Set the new scene to the scene returned by the close() call
+			currentScene = currentScene.close();
+			break;
+		}
+		
+		if (currentScene != null) currentScene.keyPressed(key);
+	}
 
 	/**
 	 * Routes key releases to the current scene.
 	 */
 	@Override
-	public void keyReleased(int key) {}
+	public void keyReleased(int key) {
+		if (currentScene != null) currentScene.keyReleased(key);
+	}
 	
 	/**
 	 * Handles game exit.
 	 */
-	private void exit() {
+	public void exit() {
 		// Dispose of the graphics slate
 		graphics.dispose();
 		
