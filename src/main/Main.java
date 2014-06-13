@@ -1,24 +1,32 @@
 package main;
 
-import scenes.Scene;
-import scenes.TitleScene;
-
-import jog.window;
-import jog.window.WindowMode;
-import jog.graphics;
-import jog.input;
-import jog.input.InputEventHandler;
-
 /**
  * Creates an instance of the game, and handles it's execution.
  */
-public class Main implements InputEventHandler {
+public class Main {
 	
-	/** The game title */
-	private static final String TITLE = "Fly Hard";
+	/** The possible game statuses
+	 * <p>
+	 * <table>
+	 * <thead>Valid statuses:</thead>
+	 * <tr><td><b>Splashing:</b></td><td>the splash screen is in effect</td></tr>
+	 * <tr><td><b>Running:</b></td><td>the game is running</td></tr>
+	 * <tr><td><b>Waiting:</b></td><td>the game is waiting</td></tr>
+	 * <tr><td><b>Paused:</b></td><td>the game has been temporarily paused</td></tr>
+	 * <tr><td><b>Exiting:</b></td><td>the game is exiting</td></tr>
+	 * </table>
+	 * </p>
+	 */
+	public enum Status {SPLASHING, RUNNING, WAITING, PAUSED, EXITING}
 	
-	/** The current scene */
-	private Scene currentScene;
+	/** The current game instance */
+	private static Main instance;
+	
+	/** The game's status */
+	private Status gameStatus;
+	
+	/** The monitor used to block the control thread until the splash ends */
+	private Object splashMonitor = new Object();
 
 	
 	/**
@@ -26,7 +34,7 @@ public class Main implements InputEventHandler {
 	 * @param args - variadic command line parameters
 	 */
 	public static void main(String... args) {
-		new Main();
+		instance = new Main();
 	}
 	
 	
@@ -34,128 +42,116 @@ public class Main implements InputEventHandler {
 	 * Creates a new game instance.
 	 */
 	private Main() {
-		// Play the splash screen first
-		splash();
+		// Start by playing the splash screen
+		gameStatus = Status.SPLASHING;
+		splash(); // Splash happens asynchronously, so this will not block
+		//TODO: Load scenes and resources
+		
+		// Wait for the splash screen to finish
+		while (gameStatus == Status.SPLASHING) {
+			try {
+				splashMonitor.wait();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
 		
 		// Then set up the game window
+		gameStatus = Status.WAITING;
 		setUpWindow();
+		gameStatus = Status.RUNNING;
 		
 		// Do the update and render loop
-		// Note: currentScene must be set by this point to enable us to detect
-		// when the game has been closed
-		while (currentScene != null) {
+		while (gameStatus == Status.RUNNING) {
 			update();
 			render();
 		}
 		
 		// Finish by handling game exit
+		gameStatus = Status.EXITING;
 		exit();
 	}
 	
 	
 	/**
 	 * Runs the pre-game splash screen.
+	 * <p>
+	 * This is an asynchronous call, i.e. a new thread will be created
+	 * to run the splash screen, and control will pass back to the
+	 * caller without blocking.
+	 * </p>
 	 */
-	private void splash() {}
+	private void splash() {
+		Thread splashThread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				//TODO: Do splash
+				
+				// End by signalling that the main control thread
+				// can proceed
+				gameStatus = Status.WAITING;
+				splashMonitor.notifyAll();
+			}
+		});
+		
+		// Start the splash thread
+		splashThread.start();
+	}
 	
 	/**
 	 * Sets up the game window.
 	 */
 	private void setUpWindow() {
-		// Creates a full-screen window with resizing disabled
-		window.initialise(TITLE, 0, 0, 60,
-				WindowMode.BORDERLESS_FULLSCREEN, false);
-		
-		// Initialise the window's graphics - necessary to start rendering
-		// the game's graphics
-		graphics.initialise();
-		
-		// Set up the first scene
-		currentScene = new TitleScene();
+		//TODO
 	}
 	
 	/**
 	 * Updates the current scene.
 	 */
 	private void update() {
-		// Update any inputs
-		input.update(this);
-		
-		// Then update the window
-		// This is done second so that the results of processing
-		// the detected inputs are displayed immediately
-		window.update();
-		
-		// Update the current scene (provided that a scene exists)
-		if (currentScene != null) currentScene.update();
+		//TODO
 	}
 	
 	/**
 	 * Renders graphical elements.
 	 */
 	private void render() {
-		// Start by clearing the graphics
-		graphics.clear();
-		
-		// Render the current scene
-		if (currentScene != null) currentScene.render();
-	}
-	
-	/**
-	 * Routes mouse presses to the current scene.
-	 */
-	@Override
-	public void mousePressed(int key, int x, int y) {
-		if (currentScene != null) currentScene.mousePressed(key, x, y);
-	}
-
-	/**
-	 * Routes mouse releases to the current scene.
-	 */
-	@Override
-	public void mouseReleased(int key, int x, int y) {
-		if (currentScene != null) currentScene.mouseReleased(key, x, y);
-	}
-
-	/**
-	 * Routes key presses to the current scene.
-	 */
-	@Override
-	public void keyPressed(int key) {
-		switch (key) {
-		case (input.KEY_ESCAPE):
-			// If the escape key is pressed, close the current scene
-			// Set the new scene to the scene returned by the close() call
-			currentScene = currentScene.close();
-			break;
-		}
-		
-		if (currentScene != null) currentScene.keyPressed(key);
-	}
-
-	/**
-	 * Routes key releases to the current scene.
-	 */
-	@Override
-	public void keyReleased(int key) {
-		if (currentScene != null) currentScene.keyReleased(key);
+		//TODO
 	}
 	
 	/**
 	 * Handles game exit.
 	 */
 	public void exit() {
-		// Dispose of the graphics slate
-		graphics.dispose();
-		
-		// Dispose of input handelers
-		input.dispose();
-		
-		// Close the window
-		window.dispose();
-		
 		// Exit the game
 		System.exit(0);
+	}
+	
+	
+	/**
+	 * Gets the current game instance.
+	 * @return the current game instance
+	 */
+	public Main instance() {
+		return instance;
+	}
+	
+	/**
+	 * Gets the game's status.
+	 * <p>
+	 * <table>
+	 * <thead>Valid statuses:</thead>
+	 * <tr><td><b>Splashing:</b></td><td>the splash screen is in effect</td></tr>
+	 * <tr><td><b>Running:</b></td><td>the game is running</td></tr>
+	 * <tr><td><b>Waiting:</b></td><td>the game is waiting</td></tr>
+	 * <tr><td><b>Paused:</b></td><td>the game has been temporarily paused</td></tr>
+	 * <tr><td><b>Exiting:</b></td><td>the game is exiting</td></tr>
+	 * </table>
+	 * </p>
+	 * @return the game's status
+	 */
+	public Status gameStatus() {
+		return gameStatus;
 	}
 
 }
