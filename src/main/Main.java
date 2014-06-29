@@ -1,16 +1,17 @@
 package main;
 
-import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsEnvironment;
+import java.awt.GraphicsConfiguration;
+import java.awt.Toolkit;
 import java.awt.Insets;
 import java.awt.Rectangle;
-import java.awt.Toolkit;
 
-import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
+import org.lwjgl.LWJGLException;
 
 /**
  * Creates an instance of the game, and handles it's execution.
@@ -22,15 +23,15 @@ public class Main {
 	 * <table>
 	 * <thead>Valid statuses:</thead>
 	 * <tr><td><b>Splashing:</b></td><td>the splash screen is in effect</td></tr>
+	 * <tr><td><b>Waiting:</b></td><td>the game is waiting</td></tr>
 	 * <tr><td><b>Running:</b></td><td>the game is running</td></tr>
 	 * <tr><td><b>Paused:</b></td><td>the game has been temporarily paused</td></tr>
-	 * <tr><td><b>Waiting:</b></td><td>the game is waiting</td></tr>
 	 * <tr><td><b>Closing:</b></td><td>the current scene is closing</td></tr>
 	 * <tr><td><b>Exiting:</b></td><td>the game is exiting</td></tr>
 	 * </table>
 	 * </p>
 	 */
-	public enum Status {SPLASHING, RUNNING, PAUSED, WAITING, CLOSING, EXITING}
+	public enum Status {SPLASHING, WAITING, RUNNING, PAUSED, CLOSING, EXITING}
 	
 	/** The current game instance */
 	private static Main instance;
@@ -38,7 +39,8 @@ public class Main {
 	/** The full-screen toggle.
 	 * <p>
 	 * If this is true, the game <b>can</b> run in full-screen mode
-	 * (provided that other conditions are met).
+	 * (provided that the computer is capable of displaying the application
+	 * full-screen).
 	 * <br>
 	 * If this is false, the game <b>will not</b> run in full-screen mode.
 	 * </p>
@@ -73,7 +75,7 @@ public class Main {
 		splash();
 		
 		// Load game scenes and resources
-		// This occurs concurrently to the splash screen
+		// This occurs concurrently to the splash screen playing
 		SceneManager.load();
 		ResourceManager.load();
 		
@@ -97,6 +99,7 @@ public class Main {
 		while (gameStatus == Status.RUNNING && !Display.isCloseRequested()) {
 			update(delta());
 			render();
+			io();
 		}
 		
 		// Finish by handling game exit
@@ -168,8 +171,6 @@ public class Main {
 				Rectangle bounds = conf.getBounds();
 
 				// Get the available screen space: dimensions - insets
-				// The x and y alterations are not necessary, but are provided
-				// for completeness
 				bounds.x += insets.left;
 				bounds.y += insets.top;
 				bounds.width -= (insets.left + insets.right);
@@ -190,39 +191,12 @@ public class Main {
 	}
 	
 	/**
-	 * Gets the time (in milliseconds) since the last update.
-	 * @return the time since the last update
-	 */
-	public int delta() {
-		long time = getTime();
-		int delta = (int) (time - lastUpdated);
-		lastUpdated = time;
-		return delta;
-	}
-	
-	/**
 	 * Updates the current scene.
 	 * @param delta - the time (in milliseconds) since the last update
 	 */
 	private void update(int delta) {
-		// Update inputs
-		while (Keyboard.next()) {
-			int key = Keyboard.getEventKey();
-			
-			if (Keyboard.getEventKeyState()) {
-				switch (key) {
-				case Keyboard.KEY_ESCAPE:
-					//TODO: Close the current scene when escape is pressed
-					break;
-				}
-				
-				//TODO: Handle key presses
-			} else {
-				//TODO: Handle key releases
-			}
-		}
-		
-		//TODO: Update scene
+		// Update the current scene
+		SceneManager.currentScene().update(delta);
 	}
 	
 	/**
@@ -237,7 +211,53 @@ public class Main {
 		// Note: this also updates any inputs (keyboard, mouse etc.)
 		Display.update();
 		
-		//TODO: Render scene
+		// Render the current scene
+		SceneManager.currentScene().render();
+	}
+	
+	/**
+	 * Handles input and output events.
+	 */
+	private void io() {
+		// Handle mouse inputs
+		while (Mouse.next()) {
+			if (Mouse.getEventButtonState()) {
+				// Handle mouse presses
+				SceneManager.currentScene().mousePress(Mouse.getEventButton(),
+						Mouse.getEventX(), Mouse.getEventY());
+			} else {
+				// Handle mouse releases
+				SceneManager.currentScene().mouseRelease(Mouse.getEventButton(),
+						Mouse.getEventX(), Mouse.getEventY());
+			}
+		}
+
+		// Handle mouse scroll inputs
+		SceneManager.currentScene().scroll(Mouse.getDWheel(),
+					Mouse.getEventX(), Mouse.getEventY());
+		
+		// Handle keyboard inputs
+		while (Keyboard.next()) {
+			// Get the key which was pressed/released
+			int key = Keyboard.getEventKey();
+
+			if (Keyboard.getEventKeyState()) {
+				// Handle the escape key as a special case
+				// This ensures consistency across scenes - the escape key
+				// will always cause the current scene to exit
+				if (key == Keyboard.KEY_ESCAPE) {
+					SceneManager.currentScene().exit();
+				}
+
+				// Handle key presses
+				SceneManager.currentScene().keyPress(key);
+			} else {
+				// Handle key releases
+				SceneManager.currentScene().keyRelease(key);
+			}
+		}
+
+		
 	}
 	
 	/**
@@ -249,6 +269,7 @@ public class Main {
 		
 		// Close the inputs
 		Keyboard.destroy();
+		Mouse.destroy();
 		
 		// Exit the game
 		System.exit(0);
@@ -259,8 +280,19 @@ public class Main {
 	 * Gets the current time in milliseconds.
 	 * @return the current time
 	 */
-	public long getTime() {
+	public long time() {
 		return (Sys.getTime() * 1000) / Sys.getTimerResolution();
+	}
+	
+	/**
+	 * Gets the time (in milliseconds) since the last update.
+	 * @return the time since the last update
+	 */
+	public int delta() {
+		long time = time();
+		int delta = (int) (time - lastUpdated);
+		lastUpdated = time;
+		return delta;
 	}
 	
 	/**
@@ -277,9 +309,9 @@ public class Main {
 	 * <table>
 	 * <thead>Valid statuses:</thead>
 	 * <tr><td><b>Splashing:</b></td><td>the splash screen is in effect</td></tr>
+	 * <tr><td><b>Waiting:</b></td><td>the game is waiting</td></tr>
 	 * <tr><td><b>Running:</b></td><td>the game is running</td></tr>
 	 * <tr><td><b>Paused:</b></td><td>the game has been temporarily paused</td></tr>
-	 * <tr><td><b>Waiting:</b></td><td>the game is waiting</td></tr>
 	 * <tr><td><b>Closing:</b></td><td>the current scene is closing</td></tr>
 	 * <tr><td><b>Exiting:</b></td><td>the game is exiting</td></tr>
 	 * </table>
