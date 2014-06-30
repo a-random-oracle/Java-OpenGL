@@ -1,6 +1,10 @@
 package scenes;
 
+import org.lwjgl.input.Keyboard;
+
 import main.Scene;
+import main.SceneManager;
+import static main.Graphics.*;
 
 public class TitleScene extends Scene {
 
@@ -16,7 +20,8 @@ public class TitleScene extends Scene {
 
 	@Override
 	protected void render() {
-		
+		drawRect(CYAN, 200, 0.25, 0.25, 0.5, 0.5);
+		drawStringCentred(GREEN, "Hello", 0.5, 0.8);
 	}
 
 	@Override
@@ -36,7 +41,11 @@ public class TitleScene extends Scene {
 
 	@Override
 	protected void keyPress(int key) {
-		
+		switch (key) {
+		case Keyboard.KEY_ESCAPE:
+			SceneManager.switchScene(-1);
+			break;
+		}
 	}
 
 	@Override
@@ -45,8 +54,8 @@ public class TitleScene extends Scene {
 	}
 
 	@Override
-	protected int exit() {
-		return 0;
+	protected void exit() {
+		
 	}
 
 }

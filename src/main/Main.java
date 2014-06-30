@@ -11,6 +11,9 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
+
+import static org.lwjgl.opengl.GL11.*;
+
 import org.lwjgl.LWJGLException;
 
 /**
@@ -31,10 +34,7 @@ public class Main {
 	 * </table>
 	 * </p>
 	 */
-	public enum Status {SPLASHING, WAITING, RUNNING, PAUSED, CLOSING, EXITING}
-	
-	/** The current game instance */
-	private static Main instance;
+	private enum Status {SPLASHING, WAITING, RUNNING, PAUSED, CLOSING, EXITING}
 	
 	/** The full-screen toggle.
 	 * <p>
@@ -48,7 +48,7 @@ public class Main {
 	private static final boolean fullscreenToggle = true;
 	
 	/** The game's current status */
-	private Status gameStatus;
+	private static Status gameStatus;
 	
 	/** The monitor used to block the control thread until the splash ends */
 	private Object splashMonitor = new Object();
@@ -62,7 +62,7 @@ public class Main {
 	 * @param args - variadic command line parameters
 	 */
 	public static void main(String... args) {
-		instance = new Main();
+		new Main();
 	}
 	
 	
@@ -93,6 +93,7 @@ public class Main {
 		// Set up the game window
 		gameStatus = Status.WAITING;
 		setUpWindow();
+		ResourceManager.loadOpenGLDependant();
 		gameStatus = Status.RUNNING;
 		
 		// Do the update and render loop
@@ -111,8 +112,8 @@ public class Main {
 	/**
 	 * Runs the pre-game splash screen.
 	 * <p>
-	 * This is an asynchronous call, i.e. a new thread will be created
-	 * to run the splash screen, and control will pass back to the
+	 * This is an asynchronous call, i.e. a new thread will be created to run
+	 * the splash screen, and control will pass back to the
 	 * caller without blocking.
 	 * </p>
 	 */
@@ -122,8 +123,7 @@ public class Main {
 			public void run() {
 				//TODO: Do splash
 				
-				// End by signalling that the main control thread
-				// can proceed
+				// End by signalling that the main control thread can proceed
 				synchronized (splashMonitor) {
 					gameStatus = Status.WAITING;
 					splashMonitor.notifyAll();
@@ -177,8 +177,7 @@ public class Main {
 				bounds.height -= (insets.top + insets.bottom);
 
 				Display.setDisplayMode(
-						new DisplayMode(bounds.width - 40, bounds.height - 50)
-						);
+						new DisplayMode(bounds.width - 40, bounds.height - 50));
 
 				Display.setLocation(bounds.x + 20, bounds.y + 10);
 			}
@@ -188,6 +187,18 @@ public class Main {
 		} catch (LWJGLException e) {
 			e.printStackTrace();
 		}
+		
+		// Set up the display
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+		glOrtho(0, Display.getWidth(), Display.getHeight(), 0, -1, 1);
+		glMatrixMode(GL_MODELVIEW);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		
+		// Set up the graphics class
+		Graphics.windowWidth = Display.getWidth();
+		Graphics.windowHeight = Display.getHeight();
 	}
 	
 	/**
@@ -210,6 +221,9 @@ public class Main {
 		// Update the display
 		// Note: this also updates any inputs (keyboard, mouse etc.)
 		Display.update();
+		
+		// Clear the screen and depth buffer
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
 		// Render the current scene
 		SceneManager.currentScene().render();
@@ -238,22 +252,12 @@ public class Main {
 		
 		// Handle keyboard inputs
 		while (Keyboard.next()) {
-			// Get the key which was pressed/released
-			int key = Keyboard.getEventKey();
-
 			if (Keyboard.getEventKeyState()) {
-				// Handle the escape key as a special case
-				// This ensures consistency across scenes - the escape key
-				// will always cause the current scene to exit
-				if (key == Keyboard.KEY_ESCAPE) {
-					SceneManager.currentScene().exit();
-				}
-
 				// Handle key presses
-				SceneManager.currentScene().keyPress(key);
+				SceneManager.currentScene().keyPress(Keyboard.getEventKey());
 			} else {
 				// Handle key releases
-				SceneManager.currentScene().keyRelease(key);
+				SceneManager.currentScene().keyRelease(Keyboard.getEventKey());
 			}
 		}
 
@@ -263,7 +267,7 @@ public class Main {
 	/**
 	 * Handles game exit.
 	 */
-	public void exit() {
+	private void exit() {
 		// Close the window
 		Display.destroy();
 		
@@ -280,7 +284,7 @@ public class Main {
 	 * Gets the current time in milliseconds.
 	 * @return the current time
 	 */
-	public long time() {
+	private long time() {
 		return (Sys.getTime() * 1000) / Sys.getTimerResolution();
 	}
 	
@@ -288,19 +292,11 @@ public class Main {
 	 * Gets the time (in milliseconds) since the last update.
 	 * @return the time since the last update
 	 */
-	public int delta() {
+	private int delta() {
 		long time = time();
 		int delta = (int) (time - lastUpdated);
 		lastUpdated = time;
 		return delta;
-	}
-	
-	/**
-	 * Gets the current game instance.
-	 * @return the current game instance
-	 */
-	public static Main instance() {
-		return instance;
 	}
 	
 	/**
@@ -318,8 +314,15 @@ public class Main {
 	 * </p>
 	 * @return the game's status
 	 */
-	public static Status gameStatus() {
-		return instance().gameStatus;
+	protected static Status gameStatus() {
+		return gameStatus;
+	}
+	
+	/**
+	 * Causes the game's status to change to closing.
+	 */
+	protected static void requestClose() {
+		gameStatus = Status.CLOSING;
 	}
 
 }

@@ -9,15 +9,15 @@ package main;
 public abstract class Scene {
 	
 	/**
-	 * Enter the scene.
+	 * Enters the scene.
 	 * <p>
-	 * Used to perform scene initialisation actions.
+	 * Used to perform scene initialisation.
 	 *</p>
 	 */
 	protected abstract void enter();
 
 	/**
-	 * Update the scene.
+	 * Updates the scene.
 	 * <p>
 	 * Runs the scene's logic.
 	 *</p>
@@ -25,7 +25,7 @@ public abstract class Scene {
 	protected abstract void update(int delta);
 	
 	/**
-	 * Render the scene.
+	 * Renders the scene.
 	 * <p>
 	 * Draws the objects present in the scene to the screen.
 	 *</p>
@@ -33,36 +33,33 @@ public abstract class Scene {
 	protected abstract void render();
 	
 	/**
-	 * Handle mouse press events.
+	 * Handles mouse press events.
 	 */
 	protected abstract void mousePress(int button, int mx, int my);
 	
 	/**
-	 * Handle mouse release events.
+	 * Handles mouse release events.
 	 */
 	protected abstract void mouseRelease(int button, int mx, int my);
 	
 	/**
-	 * Handle mouse scroll events.
+	 * Handles mouse scroll events.
 	 */
 	protected abstract void scroll(int amount, int mx, int my);
 	
 	/**
-	 * Handle key press events.
+	 * Handles key press events.
 	 */
 	protected abstract void keyPress(int key);
 	
 	/**
-	 * Handle key release events.
+	 * Handles key release events.
 	 */
 	protected abstract void keyRelease(int key);
 	
 	/**
-	 * Exit the scene.
-	 * <p>
-	 * Closes the scene.
-	 *</p>
+	 * Exits the scene.
 	 */
-	protected abstract int exit();
+	protected abstract void exit();
 	
 }

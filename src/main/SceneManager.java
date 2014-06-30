@@ -18,6 +18,7 @@ public abstract class SceneManager {
 	/** The dictionary of scenes */
 	private static TreeMap<Integer, Scene> scenes;
 	
+	/** The current scene */
 	private static Scene currentScene;
 
 	/**
@@ -30,11 +31,11 @@ public abstract class SceneManager {
 	public static void load() {
 		// Initialise the list of scenes
 		// This is done here (rather than in the initial declaration) to keep
-		// all of the memory intensive operations in one place
+		// all of the loading operations in one place
 		scenes = new TreeMap<Integer, Scene>();
 		
 		// Create an instance of each of the scenes
-		// To add more scenes, add them below - an example entry is provided
+		// To load more scenes, add them below - an example entry is provided
 		// NOTE: The first scene in this list will be displayed as the first
 		// scene when the game is run
 		// Other than the first scene, the order the scenes appear in below is
@@ -188,6 +189,37 @@ public abstract class SceneManager {
 		// higher than the previous highest index
 		scenes.put(highestIndex + 1, scene);
 		return true;
+	}
+	
+	/**
+	 * Switches the current scene.
+	 * <p>
+	 * This calls the current scene's {@link Scene#exit()} method, then switches
+	 * to the scene specified by the scene index provided.
+	 * </p>
+	 * @param nextSceneIndex - the index of the scene to switch to
+	 * @throws IllegalArgumentException - if the specified scene is not present
+	 * in the dictionary of scenes
+	 */
+	public static void switchScene(int nextSceneIndex)
+			throws IllegalArgumentException {
+		// Exit the current scene
+		currentScene.exit();
+		
+		// Negative scene indexes cause the game to close
+		if (nextSceneIndex < 0) {
+			Main.requestClose();
+		} else {
+			// Check that the scene to switch to is valid
+			if (scenes.containsKey(nextSceneIndex)) {
+				currentScene = scenes.get(nextSceneIndex);
+			} else {
+				// If the scene instance is not in the dictionary, throw an error
+				// back to the caller
+				throw new IllegalArgumentException(
+						"The scene specified is not loaded.");
+			}
+		}
 	}
 	
 }

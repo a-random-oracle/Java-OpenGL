@@ -8,5 +8,6 @@
 			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="Fly Hard/lib/natives"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="lib/slick-util.jar" sourcepath="lib/slick-util-src.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
