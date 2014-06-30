@@ -21,6 +21,7 @@ public abstract class Scene {
 	 * <p>
 	 * Runs the scene's logic.
 	 *</p>
+	 *@param delta - the time (in milliseconds) since the last update
 	 */
 	protected abstract void update(int delta);
 	

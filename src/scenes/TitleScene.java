@@ -2,28 +2,46 @@ package scenes;
 
 import org.lwjgl.input.Keyboard;
 
+import utilities.FadeString;
+import utilities.FadeString.FadeDirection;
 import main.Scene;
 import main.SceneManager;
 import static utilities.Graphics.*;
 
 public class TitleScene extends Scene {
+	
+	/** The list of titles to draw */
+	private static final FadeString[] titleTextArray = new FadeString[] {
+		new FadeString("Team GOA Presents ...", FadeDirection.FADE_IN,
+				1000, Align.CENTRE, BLUE, 0.5, 0.5),
+		new FadeString("Fly Hard", FadeDirection.FADE_IN,
+				1000, Align.CENTRE, BLUE, 0.5, 0.5),
+	};
+
+	/** The current title text stage */
+	private int titleTextStage;
 
 	@Override
-	protected void enter() {}
+	protected void enter() {
+		titleTextStage = 0;
+	}
 
 	@Override
-	protected void update(int delta) {}
+	protected void update(int delta) {
+		titleTextArray[titleTextStage].update(delta);
+		
+		if (titleTextArray[titleTextStage].duration() > 3000) {
+			titleTextStage++;
+		}
+	}
 
 	@Override
 	protected void render() {
-		drawRect(CYAN, 200, 0.25, 0.25, 0.5, 0.5);
-		drawStringCentred(GREEN, "Hello", 0.5, 0.8);
+		titleTextArray[titleTextStage].render();
 	}
 
 	@Override
-	protected void mousePress(int button, int mx, int my) {
-		
-	}
+	protected void mousePress(int button, int mx, int my) {}
 
 	@Override
 	protected void mouseRelease(int button, int mx, int my) {}

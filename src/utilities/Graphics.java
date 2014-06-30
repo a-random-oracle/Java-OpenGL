@@ -5,8 +5,15 @@ import static org.lwjgl.opengl.GL11.*;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.TrueTypeFont;
 
+/**
+ * Handles low-level rendering of shapes, text etc.
+ */
 public class Graphics {
 	
+	/** Text alignment options */
+	public enum Align {LEFT, RIGHT, CENTRE};
+	
+	/* Colours */
 	public static final int[] RED = new int[] {255, 0, 0};
 	public static final int[] GREEN = new int[] {0, 255, 0};
 	public static final int[] BLUE = new int[] {0, 0, 255};
@@ -16,9 +23,16 @@ public class Graphics {
 	public static final int[] BLACK = new int[] {0, 0, 0};
 	public static final int[] WHITE = new int[] {255, 255, 255};
 	
+	/* Game properties */
 	public static double windowWidth;
 	public static double windowHeight;
 	public static TrueTypeFont font;
+	
+	
+	
+	
+	
+	
 	
 	/*###########################   Rectangles   ###########################*/
 	/**
@@ -96,84 +110,100 @@ public class Graphics {
 	}
 	
 	
+	
+	
+	
+	
+	
 	/*#############################   Strings   #############################*/
 	/**
 	 * Draws a string.
 	 * @param string - the string to draw
+	 * @param alignment - the alignment to give the string
 	 * @param x - the x position to draw the string at
 	 * @param y - the y position to draw the string at
 	 */
-	public static void drawString(String string, double x, double y) {
-		font.drawString((float) (x * windowWidth), (float) (y * windowHeight),
-				string);
-	}
-	
-	/**
-	 * Draws a string centred horizontally.
-	 * @param string - the string to draw
-	 * @param x - the x position to draw the string at
-	 * @param y - the y position to draw the string at
-	 */
-	public static void drawStringCentred(String string, double x, double y) {
-		font.drawString((float) ((x * windowWidth)
-				- (font.getWidth(string) / 2)),
-				(float) (y * windowHeight), string);
-	}
-	
-	/**
-	 * Draws a string.
-	 * @param string - the string to draw
-	 * @param colour - the colour to draw the string
-	 * @param x - the x position to draw the string at
-	 * @param y - the y position to draw the string at
-	 */
-	public static void drawString(int[] colour,
-			String string, double x, double y) {
-		font.drawString((float) (x * windowWidth), (float) (y * windowHeight),
-				string, new Color(colour[0], colour[1], colour[2]));
-	}
-	
-	/**
-	 * Draws a string centred horizontally.
-	 * @param string - the string to draw
-	 * @param colour - the colour to draw the string
-	 * @param x - the x position to draw the string at
-	 * @param y - the y position to draw the string at
-	 */
-	public static void drawStringCentred(int[] colour,
-			String string, double x, double y) {
-		font.drawString((float) ((x * windowWidth)
-				- (font.getWidth(string) / 2)), (float) (y * windowHeight),
-				string, new Color(colour[0], colour[1], colour[2]));
+	public static void drawString(String string, Align alignment,
+			double x, double y) {
+		switch (alignment) {
+		case LEFT:
+			font.drawString((float) (x * windowWidth),
+					(float) (y * windowHeight), string);
+			break;
+		case RIGHT:
+			font.drawString((float) ((x * windowWidth)
+					- (font.getWidth(string))),
+					(float) (y * windowHeight), string);
+			break;
+		case CENTRE:
+			font.drawString((float) ((x * windowWidth)
+					- (font.getWidth(string) / 2)),
+					(float) (y * windowHeight), string);
+			break;
+		}
 	}
 	
 	/**
 	 * Draws a string.
 	 * @param string - the string to draw
+	 * @param alignment - the alignment to give the string
 	 * @param colour - the colour to draw the string
-	 * @param transp - the alpha level to use
 	 * @param x - the x position to draw the string at
 	 * @param y - the y position to draw the string at
 	 */
-	public static void drawString(int[] colour, int transp,
-			String string, double x, double y) {
-		font.drawString((float) (x * windowWidth), (float) (y * windowHeight),
-				string, new Color(colour[0], colour[1], colour[2], transp));
+	public static void drawString(String string, Align alignment,
+			int[] colour, double x, double y) {
+		switch (alignment) {
+		case LEFT:
+			font.drawString((float) (x * windowWidth),
+					(float) (y * windowHeight),
+					string, new Color(colour[0], colour[1], colour[2]));
+			break;
+		case RIGHT:
+			font.drawString((float) ((x * windowWidth)
+					- (font.getWidth(string))),
+					(float) (y * windowHeight),
+					string, new Color(colour[0], colour[1], colour[2]));
+			break;
+		case CENTRE:
+			font.drawString((float) ((x * windowWidth)
+					- (font.getWidth(string) / 2)),
+					(float) (y * windowHeight),
+					string, new Color(colour[0], colour[1], colour[2]));
+			break;
+		}
 	}
 	
 	/**
-	 * Draws a string centred horizontally.
+	 * Draws a string.
 	 * @param string - the string to draw
+	 * @param alignment - the alignment to give the string
 	 * @param colour - the colour to draw the string
 	 * @param transp - the alpha level to use
 	 * @param x - the x position to draw the string at
 	 * @param y - the y position to draw the string at
 	 */
-	public static void drawStringCentred(int[] colour, int transp,
-			String string, double x, double y) {
-		font.drawString((float) ((x * windowWidth)
-				- (font.getWidth(string) / 2)), (float) (y * windowHeight),
-				string, new Color(colour[0], colour[1], colour[2], transp));
+	public static void drawString(String string, Align alignment,
+			int[] colour, int transp, double x, double y) {
+		switch (alignment) {
+		case LEFT:
+			font.drawString((float) (x * windowWidth),
+					(float) (y * windowHeight), string,
+					new Color(colour[0], colour[1], colour[2], transp));
+			break;
+		case RIGHT:
+			font.drawString((float) ((x * windowWidth)
+					- (font.getWidth(string))),
+					(float) (y * windowHeight), string,
+					new Color(colour[0], colour[1], colour[2], transp));
+			break;
+		case CENTRE:
+			font.drawString((float) ((x * windowWidth)
+					- (font.getWidth(string) / 2)),
+					(float) (y * windowHeight), string,
+					new Color(colour[0], colour[1], colour[2], transp));
+			break;
+		}
 	}
 	
 }

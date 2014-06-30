@@ -56,7 +56,7 @@ public class Main {
 	private Object splashMonitor = new Object();
 	
 	/** The time at which the game last updated */
-	private long lastUpdated = 0;
+	private long lastUpdated;
 
 	
 	/**
@@ -100,6 +100,9 @@ public class Main {
 		
 		// Enter the first scene
 		SceneManager.currentScene().enter();
+		
+		// Initialise the last update time
+		lastUpdated = time();
 		
 		// Do the update and render loop
 		while (gameStatus == Status.RUNNING && !Display.isCloseRequested()) {
