@@ -1,6 +1,7 @@
 package utilities;
 
 import static org.lwjgl.opengl.GL11.*;
+import main.ResourceManager;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.TrueTypeFont;
@@ -11,7 +12,11 @@ import org.newdawn.slick.TrueTypeFont;
 public class Graphics {
 	
 	/** Text alignment options */
-	public enum Align {LEFT, RIGHT, CENTRE};
+	public enum Align {
+		TOP_LEFT, TOP_CENTRE, TOP_RIGHT,
+		MID_LEFT, MID_CENTRE, MID_RIGHT,
+		BOTTOM_LEFT, BOTTOM_CENTRE, BOTTOM_RIGHT,
+	};
 	
 	/* Colours */
 	public static final int[] RED = new int[] {255, 0, 0};
@@ -26,7 +31,7 @@ public class Graphics {
 	/* Game properties */
 	public static double windowWidth;
 	public static double windowHeight;
-	public static TrueTypeFont font;
+	public static TrueTypeFont font = ResourceManager.mainFont();
 	
 	
 	
@@ -126,19 +131,53 @@ public class Graphics {
 	public static void drawString(String string, Align alignment,
 			double x, double y) {
 		switch (alignment) {
-		case LEFT:
+		case TOP_LEFT:
 			font.drawString((float) (x * windowWidth),
 					(float) (y * windowHeight), string);
 			break;
-		case RIGHT:
+		case TOP_CENTRE:
+			font.drawString((float) ((x * windowWidth)
+					- (font.getWidth(string) / 2)),
+					(float) (y * windowHeight), string);
+			break;
+		case TOP_RIGHT:
 			font.drawString((float) ((x * windowWidth)
 					- (font.getWidth(string))),
 					(float) (y * windowHeight), string);
 			break;
-		case CENTRE:
+		case MID_LEFT:
+			font.drawString((float) (x * windowWidth),
+					(float) ((y * windowHeight)
+					- (font.getHeight(string) / 2)), string);
+			break;
+		case MID_CENTRE:
 			font.drawString((float) ((x * windowWidth)
 					- (font.getWidth(string) / 2)),
-					(float) (y * windowHeight), string);
+					(float) ((y * windowHeight)
+					- (font.getHeight(string) / 2)), string);
+			break;
+		case MID_RIGHT:
+			font.drawString((float) ((x * windowWidth)
+					- (font.getWidth(string))),
+					(float) ((y * windowHeight)
+					- (font.getHeight(string) / 2)), string);
+			break;
+		case BOTTOM_LEFT:
+			font.drawString((float) (x * windowWidth),
+					(float) ((y * windowHeight)
+					- (font.getHeight(string))), string);
+			break;
+		case BOTTOM_CENTRE:
+			font.drawString((float) ((x * windowWidth)
+					- (font.getWidth(string) / 2)),
+					(float) ((y * windowHeight)
+					- (font.getHeight(string))), string);
+			break;
+		case BOTTOM_RIGHT:
+			font.drawString((float) ((x * windowWidth)
+					- (font.getWidth(string))),
+					(float) ((y * windowHeight)
+					- (font.getHeight(string))), string);
 			break;
 		}
 	}
@@ -154,22 +193,62 @@ public class Graphics {
 	public static void drawString(String string, Align alignment,
 			int[] colour, double x, double y) {
 		switch (alignment) {
-		case LEFT:
+		case TOP_LEFT:
 			font.drawString((float) (x * windowWidth),
-					(float) (y * windowHeight),
-					string, new Color(colour[0], colour[1], colour[2]));
+					(float) (y * windowHeight), string,
+					new Color(colour[0], colour[1], colour[2]));
 			break;
-		case RIGHT:
-			font.drawString((float) ((x * windowWidth)
-					- (font.getWidth(string))),
-					(float) (y * windowHeight),
-					string, new Color(colour[0], colour[1], colour[2]));
-			break;
-		case CENTRE:
+		case TOP_CENTRE:
 			font.drawString((float) ((x * windowWidth)
 					- (font.getWidth(string) / 2)),
-					(float) (y * windowHeight),
-					string, new Color(colour[0], colour[1], colour[2]));
+					(float) (y * windowHeight), string,
+					new Color(colour[0], colour[1], colour[2]));
+			break;
+		case TOP_RIGHT:
+			font.drawString((float) ((x * windowWidth)
+					- (font.getWidth(string))),
+					(float) (y * windowHeight), string,
+					new Color(colour[0], colour[1], colour[2]));
+			break;
+		case MID_LEFT:
+			font.drawString((float) (x * windowWidth),
+					(float) ((y * windowHeight)
+					- (font.getHeight(string) / 2)), string,
+					new Color(colour[0], colour[1], colour[2]));
+			break;
+		case MID_CENTRE:
+			font.drawString((float) ((x * windowWidth)
+					- (font.getWidth(string) / 2)),
+					(float) ((y * windowHeight)
+					- (font.getHeight(string) / 2)), string,
+					new Color(colour[0], colour[1], colour[2]));
+			break;
+		case MID_RIGHT:
+			font.drawString((float) ((x * windowWidth)
+					- (font.getWidth(string))),
+					(float) ((y * windowHeight)
+					- (font.getHeight(string) / 2)), string,
+					new Color(colour[0], colour[1], colour[2]));
+			break;
+		case BOTTOM_LEFT:
+			font.drawString((float) (x * windowWidth),
+					(float) ((y * windowHeight)
+					- (font.getHeight(string))), string,
+					new Color(colour[0], colour[1], colour[2]));
+			break;
+		case BOTTOM_CENTRE:
+			font.drawString((float) ((x * windowWidth)
+					- (font.getWidth(string) / 2)),
+					(float) ((y * windowHeight)
+					- (font.getHeight(string))), string,
+					new Color(colour[0], colour[1], colour[2]));
+			break;
+		case BOTTOM_RIGHT:
+			font.drawString((float) ((x * windowWidth)
+					- (font.getWidth(string))),
+					(float) ((y * windowHeight)
+					- (font.getHeight(string))), string,
+					new Color(colour[0], colour[1], colour[2]));
 			break;
 		}
 	}
@@ -186,24 +265,73 @@ public class Graphics {
 	public static void drawString(String string, Align alignment,
 			int[] colour, int transp, double x, double y) {
 		switch (alignment) {
-		case LEFT:
+		case TOP_LEFT:
 			font.drawString((float) (x * windowWidth),
 					(float) (y * windowHeight), string,
 					new Color(colour[0], colour[1], colour[2], transp));
 			break;
-		case RIGHT:
-			font.drawString((float) ((x * windowWidth)
-					- (font.getWidth(string))),
-					(float) (y * windowHeight), string,
-					new Color(colour[0], colour[1], colour[2], transp));
-			break;
-		case CENTRE:
+		case TOP_CENTRE:
 			font.drawString((float) ((x * windowWidth)
 					- (font.getWidth(string) / 2)),
 					(float) (y * windowHeight), string,
 					new Color(colour[0], colour[1], colour[2], transp));
 			break;
+		case TOP_RIGHT:
+			font.drawString((float) ((x * windowWidth)
+					- (font.getWidth(string))),
+					(float) (y * windowHeight), string,
+					new Color(colour[0], colour[1], colour[2], transp));
+			break;
+		case MID_LEFT:
+			font.drawString((float) (x * windowWidth),
+					(float) ((y * windowHeight)
+					- (font.getHeight(string) / 2)), string,
+					new Color(colour[0], colour[1], colour[2], transp));
+			break;
+		case MID_CENTRE:
+			font.drawString((float) ((x * windowWidth)
+					- (font.getWidth(string) / 2)),
+					(float) ((y * windowHeight)
+					- (font.getHeight(string) / 2)), string,
+					new Color(colour[0], colour[1], colour[2], transp));
+			break;
+		case MID_RIGHT:
+			font.drawString((float) ((x * windowWidth)
+					- (font.getWidth(string))),
+					(float) ((y * windowHeight)
+					- (font.getHeight(string) / 2)), string,
+					new Color(colour[0], colour[1], colour[2], transp));
+			break;
+		case BOTTOM_LEFT:
+			font.drawString((float) (x * windowWidth),
+					(float) ((y * windowHeight)
+					- (font.getHeight(string))), string,
+					new Color(colour[0], colour[1], colour[2], transp));
+			break;
+		case BOTTOM_CENTRE:
+			font.drawString((float) ((x * windowWidth)
+					- (font.getWidth(string) / 2)),
+					(float) ((y * windowHeight)
+					- (font.getHeight(string))), string,
+					new Color(colour[0], colour[1], colour[2], transp));
+			break;
+		case BOTTOM_RIGHT:
+			font.drawString((float) ((x * windowWidth)
+					- (font.getWidth(string))),
+					(float) ((y * windowHeight)
+					- (font.getHeight(string))), string,
+					new Color(colour[0], colour[1], colour[2], transp));
+			break;
 		}
+	}
+	
+	/**
+	 * Sets the font size of the main font.
+	 * @param size - the size to draw the main font
+	 */
+	public static void setFontSize(int size) {
+		ResourceManager.setMainFontSize(size);
+		font = ResourceManager.mainFont();
 	}
 	
 }

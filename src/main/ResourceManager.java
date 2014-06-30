@@ -8,8 +8,6 @@ import java.io.InputStream;
 import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.util.ResourceLoader;
 
-import utilities.Graphics;
-
 public abstract class ResourceManager {
 	
 	/** The main font template */
@@ -22,8 +20,6 @@ public abstract class ResourceManager {
 	 * Loads resources.
 	 */
 	public static void load() {
-		//TODO: Load initial resources
-		
 		// Load the font templates
 		InputStream inputStream =
 				ResourceLoader.getResourceAsStream(
@@ -46,13 +42,10 @@ public abstract class ResourceManager {
 	public static void loadOpenGLDependant() {
 		// Create the true-type font
 		try {
-			mainFont = new TrueTypeFont(mainFontTemplate, false);
+			mainFont = new TrueTypeFont(mainFontTemplate, true);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
-		// Set the current graphics font to the main font
-		Graphics.font = mainFont;
 	}
 	
 	
@@ -62,6 +55,15 @@ public abstract class ResourceManager {
 	 */
 	public static TrueTypeFont mainFont() {
 		return mainFont;
+	}
+	
+	/**
+	 * Sets the font size of the main font.
+	 * @param size - the size to draw the main font
+	 */
+	public static void setMainFontSize(int size) {
+		mainFontTemplate = mainFontTemplate.deriveFont((float) size);
+		mainFont = new TrueTypeFont(mainFontTemplate, true);
 	}
 	
 }

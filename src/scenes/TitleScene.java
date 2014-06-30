@@ -3,6 +3,7 @@ package scenes;
 import org.lwjgl.input.Keyboard;
 
 import utilities.FadeString;
+import utilities.Graphics;
 import utilities.FadeString.FadeDirection;
 import main.Scene;
 import main.SceneManager;
@@ -10,12 +11,12 @@ import static utilities.Graphics.*;
 
 public class TitleScene extends Scene {
 	
-	/** The list of titles to draw */
+	/** The list of strings to draw */
 	private static final FadeString[] titleTextArray = new FadeString[] {
 		new FadeString("Team GOA Presents ...", FadeDirection.FADE_IN,
-				1000, Align.CENTRE, BLUE, 0.5, 0.5),
+				1000, Align.MID_CENTRE, BLUE, 0.5, 0.5),
 		new FadeString("Fly Hard", FadeDirection.FADE_IN,
-				1000, Align.CENTRE, BLUE, 0.5, 0.5),
+				1000, Align.MID_CENTRE, BLUE, 0.5, 0.5),
 	};
 
 	/** The current title text stage */
@@ -24,13 +25,16 @@ public class TitleScene extends Scene {
 	@Override
 	protected void enter() {
 		titleTextStage = 0;
+		
+		Graphics.setFontSize(52);
 	}
 
 	@Override
 	protected void update(int delta) {
 		titleTextArray[titleTextStage].update(delta);
 		
-		if (titleTextArray[titleTextStage].duration() > 3000) {
+		if (titleTextArray[titleTextStage].duration() > 3000
+				&& titleTextStage < (titleTextArray.length - 1)) {
 			titleTextStage++;
 		}
 	}
