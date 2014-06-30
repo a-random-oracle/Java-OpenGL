@@ -96,6 +96,9 @@ public class Main {
 		ResourceManager.loadOpenGLDependant();
 		gameStatus = Status.RUNNING;
 		
+		// Enter the first scene
+		SceneManager.currentScene().enter();
+		
 		// Do the update and render loop
 		while (gameStatus == Status.RUNNING && !Display.isCloseRequested()) {
 			update(delta());

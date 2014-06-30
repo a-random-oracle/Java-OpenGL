@@ -212,7 +212,11 @@ public abstract class SceneManager {
 		} else {
 			// Check that the scene to switch to is valid
 			if (scenes.containsKey(nextSceneIndex)) {
+				// Set the scene to switch to as the current scene
 				currentScene = scenes.get(nextSceneIndex);
+				
+				// Run the new scene's enter() method
+				currentScene.enter();
 			} else {
 				// If the scene instance is not in the dictionary, throw an error
 				// back to the caller

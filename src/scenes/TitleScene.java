@@ -9,14 +9,10 @@ import static main.Graphics.*;
 public class TitleScene extends Scene {
 
 	@Override
-	protected void enter() {
-		
-	}
+	protected void enter() {}
 
 	@Override
-	protected void update(int delta) {
-		
-	}
+	protected void update(int delta) {}
 
 	@Override
 	protected void render() {
@@ -30,14 +26,10 @@ public class TitleScene extends Scene {
 	}
 
 	@Override
-	protected void mouseRelease(int button, int mx, int my) {
-		
-	}
+	protected void mouseRelease(int button, int mx, int my) {}
 
 	@Override
-	protected void scroll(int amount, int mx, int my) {
-		
-	}
+	protected void scroll(int amount, int mx, int my) {}
 
 	@Override
 	protected void keyPress(int key) {
@@ -49,13 +41,9 @@ public class TitleScene extends Scene {
 	}
 
 	@Override
-	protected void keyRelease(int key) {
-		
-	}
+	protected void keyRelease(int key) {}
 
 	@Override
-	protected void exit() {
-		
-	}
+	protected void exit() {}
 
 }
