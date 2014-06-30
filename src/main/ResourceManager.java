@@ -8,6 +8,8 @@ import java.io.InputStream;
 import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.util.ResourceLoader;
 
+import utilities.Graphics;
+
 public abstract class ResourceManager {
 	
 	/** The main font template */

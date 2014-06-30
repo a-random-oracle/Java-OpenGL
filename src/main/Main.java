@@ -16,6 +16,8 @@ import static org.lwjgl.opengl.GL11.*;
 
 import org.lwjgl.LWJGLException;
 
+import utilities.Graphics;
+
 /**
  * Creates an instance of the game, and handles it's execution.
  */

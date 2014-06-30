@@ -4,7 +4,7 @@ import org.lwjgl.input.Keyboard;
 
 import main.Scene;
 import main.SceneManager;
-import static main.Graphics.*;
+import static utilities.Graphics.*;
 
 public class TitleScene extends Scene {
 
