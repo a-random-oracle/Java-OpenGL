@@ -9,14 +9,12 @@ import java.awt.Rectangle;
 import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.ContextAttribs;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
-
-import static org.lwjgl.opengl.GL11.*;
-
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.PixelFormat;
 import org.lwjgl.LWJGLException;
-
-import utilities.Graphics;
 
 /**
  * Creates an instance of the game, and handles it's execution.
@@ -191,29 +189,27 @@ public class Main {
 			}
 			
 			// Create the display
-			Display.create();
+			PixelFormat pixelFormat = new PixelFormat();
+			ContextAttribs contextAtribs = new ContextAttribs(3, 2)
+				.withForwardCompatible(true)
+				.withProfileCore(true);
+			
+			Display.create(pixelFormat, contextAtribs);
 		} catch (LWJGLException e) {
 			e.printStackTrace();
 		}
 		
 		// Set up the display
-		glMatrixMode(GL_PROJECTION);
-		glLoadIdentity();
-		glOrtho(0, Display.getWidth(), Display.getHeight(), 0, -1, 1);
-		glMatrixMode(GL_MODELVIEW);
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		
-		// Set up the graphics class
-		Graphics.windowWidth = Display.getWidth();
-		Graphics.windowHeight = Display.getHeight();
+		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		GL11.glViewport(0, 0, Display.getWidth(), Display.getHeight());
 	}
 	
 	/**
 	 * Updates the current scene.
 	 * @param delta - the time (in milliseconds) since the last update
 	 */
-	private void update(int delta) {
+	private void update(double delta) {
 		// Update the current scene
 		SceneManager.currentScene().update(delta);
 	}
@@ -225,16 +221,16 @@ public class Main {
 		// Set FPS to 60
 		// This must be run between every graphical update
 		Display.sync(60);
+		
+		// Clear the screen and depth buffers
+		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+		
+		// Render the current scene
+		SceneManager.currentScene().render();
 					
 		// Update the display
 		// Note: this also updates any inputs (keyboard, mouse etc.)
 		Display.update();
-		
-		// Clear the screen and depth buffer
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		
-		// Render the current scene
-		SceneManager.currentScene().render();
 	}
 	
 	/**

@@ -23,7 +23,7 @@ public abstract class Scene {
 	 *</p>
 	 *@param delta - the time (in milliseconds) since the last update
 	 */
-	protected abstract void update(int delta);
+	protected abstract void update(double delta);
 	
 	/**
 	 * Renders the scene.

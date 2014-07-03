@@ -1,47 +1,35 @@
 package scenes;
 
-import org.lwjgl.input.Keyboard;
-
-import utilities.FadeString;
-import utilities.Graphics;
-import utilities.FadeString.FadeDirection;
 import main.Scene;
 import main.SceneManager;
-import static utilities.Graphics.*;
+
+import graphics.Vertex;
+import graphics.Quad;
+import graphics.Quad.Rectangle;
+
+import org.lwjgl.input.Keyboard;
 
 public class TitleScene extends Scene {
 	
-	/** The list of strings to draw */
-	private static final FadeString[] titleTextArray = new FadeString[] {
-		new FadeString("Team GOA Presents ...", FadeDirection.FADE_IN,
-				1000, Align.MID_CENTRE, BLUE, 0.5, 0.5),
-		new FadeString("Fly Hard", FadeDirection.FADE_IN,
-				1000, Align.MID_CENTRE, BLUE, 0.5, 0.5),
-	};
-
-	/** The current title text stage */
-	private int titleTextStage;
-
+	private Quad quad;
+	private Rectangle rect;
+	
 	@Override
 	protected void enter() {
-		titleTextStage = 0;
-		
-		Graphics.setFontSize(52);
+		quad = new Quad(new Vertex(0.4, 0.1, 1, 0, 0, 1),
+				new Vertex(0.4, 0.3, 0, 1, 0, 1),
+				new Vertex(0.6, 0.3, 0, 0, 1, 1),
+				new Vertex(0.6, 0.1, 1, 1, 1, 1));
+		rect = new Rectangle(new Vertex(0.4, 0.6, 0.5, 0.3, 0.8, 0.3), 0.2, 0.2);
 	}
 
 	@Override
-	protected void update(int delta) {
-		titleTextArray[titleTextStage].update(delta);
-		
-		if (titleTextArray[titleTextStage].duration() > 3000
-				&& titleTextStage < (titleTextArray.length - 1)) {
-			titleTextStage++;
-		}
-	}
+	protected void update(double delta) {}
 
 	@Override
 	protected void render() {
-		titleTextArray[titleTextStage].render();
+		quad.render();
+		rect.render();
 	}
 
 	@Override
@@ -66,6 +54,9 @@ public class TitleScene extends Scene {
 	protected void keyRelease(int key) {}
 
 	@Override
-	protected void exit() {}
+	protected void exit() {
+		quad.destroy();
+		rect.destroy();
+	}
 
 }
