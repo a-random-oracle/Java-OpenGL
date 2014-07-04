@@ -9,7 +9,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.DoubleBuffer;
+import java.nio.FloatBuffer;
 
 import org.lwjgl.BufferUtils;
 
@@ -21,14 +21,11 @@ public abstract class Shape {
 	/** The VAO object pointer */
 	private final int objectPointer;
 	
-	/** The VBO object pointer */
-	private final int vertexPointer;
+	/** The VBO containing the vertex properties */
+	private final int verticesPointer;
 	
 	/** The VBO containing the vertex indices */
 	private final int indicesPointer;
-	
-	/** The VBO containing the vertex colours */
-	private final int coloursPointer;
 	
 	/** The number of indices */
 	private final int indicesCount;
@@ -49,108 +46,68 @@ public abstract class Shape {
 	 * @param vertices - the shape's constituent vertices
 	 */
 	public Shape(byte[] indexArray, Vertex... vertices) {
-		// Add the vertices to the vertex array
-		// Also add their colours to the colours array
-		double[] vertexArray = new double[vertices.length * 3];
-		double[] colourArray = new double[vertices.length * 4];
-		
-		int curVertexIndex = 0;
-		int curColourIndex = 0;
-		for (Vertex vertex : vertices) {
-			vertexArray[curVertexIndex] = vertex.x();
-			vertexArray[curVertexIndex + 1] = vertex.y();
-			vertexArray[curVertexIndex + 2] = vertex.z();
-			
-			colourArray[curColourIndex] = vertex.r();
-			colourArray[curColourIndex + 1] = vertex.g();
-			colourArray[curColourIndex + 2] = vertex.b();
-			colourArray[curColourIndex + 3] = vertex.a();
-			
-			curVertexIndex += 3;
-			curColourIndex += 4;
-		}
-		
-		// Create a buffer to hold the vertices
-		DoubleBuffer vertexBuffer =
-				BufferUtils.createDoubleBuffer(vertexArray.length);
-		
-		// Put the vertices into the buffer
-		vertexBuffer.put(vertexArray);
-		
-		// Flip the buffer
-		// This is required by OpenGL (not a clue why)
-		vertexBuffer.flip();
-		
-		
-		// Create a buffer to hold the vertex indices
-		ByteBuffer indexBuffer =
-				BufferUtils.createByteBuffer(indexArray.length);
-		
-		// Store the number of vertex indices
+		// Store the number of indices used to define the shape
 		indicesCount = indexArray.length;
 		
-		// Put the indices into the buffer
-		indexBuffer.put(indexArray);
+		
+		// Create a buffer to hold the vertex properties
+		FloatBuffer verticesBuffer = BufferUtils.createFloatBuffer(
+				vertices.length * 8);
+
+		// Put the vertex properties into the buffer
+		for (Vertex vertex : vertices) {
+			verticesBuffer.put(vertex.xyzw());
+			verticesBuffer.put(vertex.rgba());
+		}
 		
 		// Flip the buffer
-		// This is required by OpenGL (not a clue why)
-		indexBuffer.flip();
-		
+		// This is required by OpenGL
+		verticesBuffer.flip();
 
-		// Create a buffer to hold the vertex colours
-		DoubleBuffer colourBuffer =
-				BufferUtils.createDoubleBuffer(colourArray.length);
 
-		// Put the colours into the buffer
-		colourBuffer.put(colourArray);
+		// Create a buffer to hold the vertex indices
+		ByteBuffer indicesBuffer =
+				BufferUtils.createByteBuffer(indexArray.length);
+
+		// Put the vertex indices into the buffer
+		indicesBuffer.put(indexArray);
 
 		// Flip the buffer
-		// This is required by OpenGL (not a clue why)
-		colourBuffer.flip();
-
+		// This is required by OpenGL
+		indicesBuffer.flip();
+		
 		
 		// Create the vertex array object
 		// This represents the shape being constructed
 		objectPointer = glGenVertexArrays();
 		glBindVertexArray(objectPointer);
 		
+		
 		// Create the vertex buffer object
 		// This represents the constituent vectors of the shape being
 		// constructed
-		vertexPointer = glGenBuffers();
-		glBindBuffer(GL_ARRAY_BUFFER, vertexPointer);
-		glBufferData(GL_ARRAY_BUFFER, vertexBuffer, GL_STATIC_DRAW);
-		
-		// Put the VBO in the attributes list at index 0
-		glVertexAttribPointer(0, 3, GL_DOUBLE, false, 0, 0);
+		verticesPointer = glGenBuffers();
+		glBindBuffer(GL_ARRAY_BUFFER, verticesPointer);
+		glBufferData(GL_ARRAY_BUFFER, verticesBuffer, GL_STATIC_DRAW);
 
-		// Clear the VBO
+		// Put the positions part of the VBO in the attributes list at
+		// index 0, and the colours part of the VBO in the attributes
+		// list at index 1
+		glVertexAttribPointer(0, 4, GL_FLOAT, false, 32, 0);
+		glVertexAttribPointer(1, 4, GL_FLOAT, false, 32, 16);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		
 		
-		// Create the vertex colours buffer object
-		coloursPointer = glGenBuffers();
-		glBindBuffer(GL_ARRAY_BUFFER, coloursPointer);
-		glBufferData(GL_ARRAY_BUFFER, colourBuffer, GL_STATIC_DRAW);
-
-		// Put the VBO in the attributes list at index 0
-		glVertexAttribPointer(1, 4, GL_DOUBLE, false, 0, 0);
-
-		// Clear the VBO
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-
 		// Clear the VAO
 		glBindVertexArray(0);
 		
 		
 		// Create the vertex indices buffer object
 		indicesPointer = glGenBuffers();
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesPointer);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexBuffer, GL_STATIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, indicesPointer);
+		glBufferData(GL_ARRAY_BUFFER, indicesBuffer, GL_STATIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		
-		// Clear the indices VBO
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 		
 		// Setup the colour shaders
 		setupShaders();
@@ -169,13 +126,13 @@ public abstract class Shape {
 		glEnableVertexAttribArray(0);
 		glEnableVertexAttribArray(1);
 
-		// Load the shape's vertices
+		// Load the shape's vertex indices
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesPointer);
 
 		// Draw the shape
 		glDrawElements(GL_TRIANGLES, indicesCount, GL_UNSIGNED_BYTE, 0);
 
-		// Clear the VAO and VBO
+		// Clear the VAO, VBO and shader program
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 		glDisableVertexAttribArray(0);
 		glDisableVertexAttribArray(1);
@@ -206,14 +163,10 @@ public abstract class Shape {
 		
 		// Delete the vertex VBO
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glDeleteBuffers(vertexPointer);
+		glDeleteBuffers(verticesPointer);
 		
-		// Delete the vertex colours VBO
+		// Delete the vertex properties VBO
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glDeleteBuffers(coloursPointer);
-		
-		// Delete the vertex indices VBO
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 		glDeleteBuffers(indicesPointer);
 		
 		// Delete the VAO

@@ -37,14 +37,33 @@ public class Quad extends Shape {
 		 * @param width - the width of the rectangle
 		 * @param height - the height of the rectangle
 		 */
-		public Rectangle(Vertex topLeft, double width, double height) {
+		public Rectangle(Vertex topLeft, float width, float height) {
 			super(topLeft,
-					new Vertex(topLeft.relX(), topLeft.relY() + height,
-							topLeft.r(), topLeft.g(), topLeft.b(), topLeft.a()),
-					new Vertex(topLeft.relX() + width, topLeft.relY() + height,
-							topLeft.r(), topLeft.g(), topLeft.b(), topLeft.a()),
-					new Vertex(topLeft.relX() + width, topLeft.relY(),
-							topLeft.r(), topLeft.g(), topLeft.b(), topLeft.a()));
+					new Vertex(topLeft.relX(),
+							topLeft.relY() + height,
+							1,
+							topLeft.r(),
+							topLeft.g(),
+							topLeft.b(),
+							topLeft.a()
+					),
+					new Vertex(topLeft.relX() + width,
+							topLeft.relY() + height,
+							1,
+							topLeft.r(),
+							topLeft.g(),
+							topLeft.b(),
+							topLeft.a()
+					),
+					new Vertex(topLeft.relX() + width,
+							topLeft.relY(),
+							1,
+							topLeft.r(),
+							topLeft.g(),
+							topLeft.b(),
+							topLeft.a()
+					)
+			);
 		}
 		
 	}
@@ -60,14 +79,33 @@ public class Quad extends Shape {
 		 * @param topLeft - the top-left point of the square
 		 * @param width - the width of the square
 		 */
-		public Square(Vertex topLeft, double width) {
+		public Square(Vertex topLeft, float width) {
 			super(topLeft,
-					new Vertex(topLeft.relX(), topLeft.relY() + width,
-							topLeft.r(), topLeft.g(), topLeft.b(), topLeft.a()),
-					new Vertex(topLeft.relX() + width, topLeft.relY() + width,
-							topLeft.r(), topLeft.g(), topLeft.b(), topLeft.a()),
-					new Vertex(topLeft.relX() + width, topLeft.relY(),
-							topLeft.r(), topLeft.g(), topLeft.b(), topLeft.a()));
+					new Vertex(topLeft.relX(),
+							topLeft.relY() + width,
+							1,
+							topLeft.r(),
+							topLeft.g(),
+							topLeft.b(),
+							topLeft.a()
+					),
+					new Vertex(topLeft.relX() + width,
+							topLeft.relY() + width,
+							1,
+							topLeft.r(),
+							topLeft.g(),
+							topLeft.b(),
+							topLeft.a()
+					),
+					new Vertex(topLeft.relX() + width,
+							topLeft.relY(),
+							1,
+							topLeft.r(),
+							topLeft.g(),
+							topLeft.b(),
+							topLeft.a()
+					)
+			);
 		}
 		
 	}

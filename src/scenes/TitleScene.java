@@ -16,11 +16,17 @@ public class TitleScene extends Scene {
 	
 	@Override
 	protected void enter() {
-		quad = new Quad(new Vertex(0.4, 0.1, 1, 0, 0, 1),
-				new Vertex(0.4, 0.3, 0, 1, 0, 1),
-				new Vertex(0.6, 0.3, 0, 0, 1, 1),
-				new Vertex(0.6, 0.1, 1, 1, 1, 1));
-		rect = new Rectangle(new Vertex(0.4, 0.6, 0.5, 0.3, 0.8, 0.3), 0.2, 0.2);
+		quad = new Quad(
+				new Vertex(0.4f, 0.1f, 1f, 1, 0, 0),
+				new Vertex(0.4f, 0.3f, 1f, 0, 1, 0),
+				new Vertex(0.6f, 0.3f, 1f, 0, 0, 1),
+				new Vertex(0.6f, 0.1f, 1f, 1, 1, 1)
+		);
+		
+		rect = new Rectangle(
+				new Vertex(0.4f, 0.6f, 1f, 0.5f, 0.3f, 0.8f, 0.3f),
+				0.2f, 0.2f
+		);
 	}
 
 	@Override
