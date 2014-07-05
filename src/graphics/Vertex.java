@@ -151,4 +151,20 @@ public class Vertex {
 		return new float[] {r(), g(), b(), a()};
 	}
 	
+	
+	/**
+	 * Sets the vertex's x position directly.
+	 * @param y - the x position to set
+	 */
+	public void setXDirect(float x) {
+		this.pos[0] = x;
+	}
+	
+	/**
+	 * Sets the vertex's y position directly.
+	 * @param y - the y position to set
+	 */
+	public void setYDirect(float y) {
+		this.pos[1] = y;
+	}
 }

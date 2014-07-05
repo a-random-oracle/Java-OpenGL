@@ -4,28 +4,36 @@ import main.Scene;
 import main.SceneManager;
 
 import graphics.Vertex;
+import graphics.Ellipse.Circle;
 import graphics.Quad;
-import graphics.Quad.Rectangle;
 
 import org.lwjgl.input.Keyboard;
 
 public class TitleScene extends Scene {
 	
 	private Quad quad;
-	private Rectangle rect;
+	private Circle circ;
+	private Quad quad2;
 	
 	@Override
 	protected void enter() {
 		quad = new Quad(
-				new Vertex(0.4f, 0.1f, 1f, 1, 0, 0),
-				new Vertex(0.4f, 0.3f, 1f, 0, 1, 0),
-				new Vertex(0.6f, 0.3f, 1f, 0, 0, 1),
-				new Vertex(0.6f, 0.1f, 1f, 1, 1, 1)
+				new Vertex(0.4f, 0.05f, 1f, 1, 0, 0),
+				new Vertex(0.4f, 0.25f, 1f, 0, 1, 0),
+				new Vertex(0.6f, 0.25f, 1f, 0, 0, 1),
+				new Vertex(0.6f, 0.05f, 1f, 0, 0, 0)
 		);
 		
-		rect = new Rectangle(
-				new Vertex(0.4f, 0.6f, 1f, 0.5f, 0.3f, 0.8f, 0.3f),
-				0.2f, 0.2f
+		circ = new Circle(
+				new Vertex(0.5f, 0.5f, 1, 0.4f, 0.5f, 1),
+				0.05f
+		);
+		
+		quad2 = new Quad(
+				new Vertex(0.4f, 0.75f, 1f, 0, 0, 1),
+				new Vertex(0.4f, 0.95f, 1f, 0, 1, 0),
+				new Vertex(0.6f, 0.95f, 1f, 1, 0, 0),
+				new Vertex(0.6f, 0.75f, 1f, 1, 1, 1)
 		);
 	}
 
@@ -35,7 +43,8 @@ public class TitleScene extends Scene {
 	@Override
 	protected void render() {
 		quad.render();
-		rect.render();
+		circ.render();
+		quad2.render();
 	}
 
 	@Override
@@ -62,7 +71,8 @@ public class TitleScene extends Scene {
 	@Override
 	protected void exit() {
 		quad.destroy();
-		rect.destroy();
+		circ.destroy();
+		quad2.destroy();
 	}
 
 }

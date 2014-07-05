@@ -49,11 +49,10 @@ public abstract class Shape {
 		// Store the number of indices used to define the shape
 		indicesCount = indexArray.length;
 		
-		
 		// Create a buffer to hold the vertex properties
 		FloatBuffer verticesBuffer = BufferUtils.createFloatBuffer(
 				vertices.length * 8);
-
+		
 		// Put the vertex properties into the buffer
 		for (Vertex vertex : vertices) {
 			verticesBuffer.put(vertex.xyzw());
