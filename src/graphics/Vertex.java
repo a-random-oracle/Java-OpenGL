@@ -11,9 +11,12 @@ public class Vertex {
 	/** The vertex's colour */
 	private float[] col;
 	
+	/** The vertex's texture position */
+	private float[] tex;
+	
 	
 	/**
-	 * Constructs a vertex.
+	 * Constructs a textured vertex.
 	 * @param x - the vertex's x position
 	 * @param y - the vertex's y position
 	 * @param z - the vertex's z position
@@ -21,9 +24,12 @@ public class Vertex {
 	 * @param g - the vertex's green value
 	 * @param b - the vertex's blue value
 	 * @param a - the vertex's alpha value
+	 * @param s - the vertex's texture s position
+	 * @param t - the vertex's texture t position
 	 */
 	public Vertex(float x, float y, float z,
-			float r, float g, float b, float a) {
+			float r, float g, float b, float a,
+			float s, float t) {
 		pos = new float[] {
 				(x * 2) - 1,
 				((y * 2) - 1) * -1,
@@ -37,6 +43,43 @@ public class Vertex {
 				b,
 				a
 		};
+		
+		tex = new float[] {
+				s,
+				t
+		};
+	}
+	
+	/**
+	 * Constructs a textured vertex.
+	 * @param x - the vertex's x position
+	 * @param y - the vertex's y position
+	 * @param z - the vertex's z position
+	 * @param r - the vertex's red value
+	 * @param g - the vertex's green value
+	 * @param b - the vertex's blue value
+	 * @param s - the vertex's texture s position
+	 * @param t - the vertex's texture t position
+	 */
+	public Vertex(float x, float y, float z,
+			float r, float g, float b,
+			float s, float t) {
+		this(x, y, z, r, g, b, 1, s, t);
+	}
+	
+	/**
+	 * Constructs a vertex.
+	 * @param x - the vertex's x position
+	 * @param y - the vertex's y position
+	 * @param z - the vertex's z position
+	 * @param r - the vertex's red value
+	 * @param g - the vertex's green value
+	 * @param b - the vertex's blue value
+	 * @param a - the vertex's alpha value
+	 */
+	public Vertex(float x, float y, float z,
+			float r, float g, float b, float a) {
+		this(x, y, z, r, g, b, a, 0, 0);
 	}
 	
 	/**
@@ -50,7 +93,7 @@ public class Vertex {
 	 */
 	public Vertex(float x, float y, float z,
 			float r, float g, float b) {
-		this(x, y, z, r, g, b, 1);
+		this(x, y, z, r, g, b, 1, 0, 0);
 	}
 	
 	
@@ -153,18 +196,27 @@ public class Vertex {
 	
 	
 	/**
-	 * Sets the vertex's x position directly.
-	 * @param y - the x position to set
+	 * Gets the vertex's texture s value.
+	 * @return the vertex's texture s value
 	 */
-	public void setXDirect(float x) {
-		this.pos[0] = x;
+	public float s() {
+		return tex[0];
 	}
 	
 	/**
-	 * Sets the vertex's y position directly.
-	 * @param y - the y position to set
+	 * Gets the vertex's texture t value.
+	 * @return the vertex's texture t value
 	 */
-	public void setYDirect(float y) {
-		this.pos[1] = y;
+	public float t() {
+		return tex[1];
 	}
+	
+	/**
+	 * Gets the vertex's texture s and t values.
+	 * @return the vertex's texture s and t values
+	 */
+	public float[] st() {
+		return new float[] {tex[0], tex[1]};
+	}
+
 }

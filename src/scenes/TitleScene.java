@@ -1,10 +1,10 @@
 package scenes;
 
+import main.ResourceManager;
 import main.Scene;
 import main.SceneManager;
-
 import graphics.Vertex;
-import graphics.Ellipse.Circle;
+import graphics.Circle;
 import graphics.Quad;
 
 import org.lwjgl.input.Keyboard;
@@ -18,16 +18,19 @@ public class TitleScene extends Scene {
 	@Override
 	protected void enter() {
 		quad = new Quad(
-				new Vertex(0.4f, 0.05f, 1f, 1, 0, 0),
-				new Vertex(0.4f, 0.25f, 1f, 0, 1, 0),
-				new Vertex(0.6f, 0.25f, 1f, 0, 0, 1),
-				new Vertex(0.6f, 0.05f, 1f, 0, 0, 0)
+				new Vertex(0.4f, 0.05f, 1f, 1, 0, 0, 0, 0),
+				new Vertex(0.4f, 0.25f, 1f, 0, 1, 0, 0, 1),
+				new Vertex(0.6f, 0.25f, 1f, 0, 0, 1, 1, 1),
+				new Vertex(0.6f, 0.05f, 1f, 0, 0, 0, 1, 0)
 		);
 		
 		circ = new Circle(
 				new Vertex(0.5f, 0.5f, 1, 0.4f, 0.5f, 1),
-				0.05f
+				0.05f,
+				10
 		);
+		
+		circ.applyTexture(ResourceManager.TEX1);
 		
 		quad2 = new Quad(
 				new Vertex(0.4f, 0.75f, 1f, 0, 0, 1),

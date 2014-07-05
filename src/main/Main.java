@@ -50,6 +50,9 @@ public class Main {
 	/** The game's current status */
 	private static Status gameStatus;
 	
+	/** The ratio between the screen's width and height */
+	private static double widthHeightRatio;
+	
 	/** The monitor used to block the control thread until the splash ends */
 	private Object splashMonitor = new Object();
 	
@@ -203,6 +206,9 @@ public class Main {
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GL11.glViewport(0, 0, Display.getWidth(), Display.getHeight());
+		
+		// Set the width-height ratio
+		widthHeightRatio = (double) Display.getWidth() / Display.getHeight();
 	}
 	
 	/**
@@ -327,6 +333,14 @@ public class Main {
 	 */
 	protected static void requestClose() {
 		gameStatus = Status.CLOSING;
+	}
+	
+	/**
+	 * Gets the ratio between the screen with and height.
+	 * @return the ratio between the screen with and height
+	 */
+	public static double widthHeightRatio() {
+		return widthHeightRatio;
 	}
 
 }

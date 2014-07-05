@@ -1,6 +1,7 @@
 package graphics;
 
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL13.*;
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.*;
@@ -8,8 +9,11 @@ import static org.lwjgl.opengl.GL30.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
+
+import main.ResourceManager;
 
 import org.lwjgl.BufferUtils;
 
@@ -39,6 +43,9 @@ public abstract class Shape {
 	/** The fragment shader */
 	private int fragmentShader;
 	
+	/** The shape's texture */
+	private int texture;
+	
 	
 	/**
 	 * Creates a shape from a vertex index mapping and a series of vertices.
@@ -46,17 +53,21 @@ public abstract class Shape {
 	 * @param vertices - the shape's constituent vertices
 	 */
 	public Shape(byte[] indexArray, Vertex... vertices) {
+		// Set the texture to a default value
+		texture = -1;
+		
 		// Store the number of indices used to define the shape
 		indicesCount = indexArray.length;
 		
 		// Create a buffer to hold the vertex properties
 		FloatBuffer verticesBuffer = BufferUtils.createFloatBuffer(
-				vertices.length * 8);
+				vertices.length * 10);
 		
 		// Put the vertex properties into the buffer
 		for (Vertex vertex : vertices) {
 			verticesBuffer.put(vertex.xyzw());
 			verticesBuffer.put(vertex.rgba());
+			verticesBuffer.put(vertex.st());
 		}
 		
 		// Flip the buffer
@@ -90,10 +101,12 @@ public abstract class Shape {
 		glBufferData(GL_ARRAY_BUFFER, verticesBuffer, GL_STATIC_DRAW);
 
 		// Put the positions part of the VBO in the attributes list at
-		// index 0, and the colours part of the VBO in the attributes
-		// list at index 1
-		glVertexAttribPointer(0, 4, GL_FLOAT, false, 32, 0);
-		glVertexAttribPointer(1, 4, GL_FLOAT, false, 32, 16);
+		// index 0, the colours part of the VBO in the attributes
+		// list at index 1, and the textures part of the VBO in the
+		// attributes list at index 2
+		glVertexAttribPointer(0, 4, GL_FLOAT, false, 40, 0);
+		glVertexAttribPointer(1, 4, GL_FLOAT, false, 40, 16);
+		glVertexAttribPointer(2, 2, GL_FLOAT, false, 40, 32);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		
 		
@@ -108,7 +121,7 @@ public abstract class Shape {
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		
 		
-		// Setup the colour shaders
+		// Set up the colour shaders
 		setupShaders();
 	}
 	
@@ -120,10 +133,20 @@ public abstract class Shape {
 		// Load the shader program
 		glUseProgram(shaderProgram);
 		
+		// Load the texture
+		if (texture != -1) {
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, texture);
+		}
+		
 		// Load the shape
 		glBindVertexArray(objectPointer);
 		glEnableVertexAttribArray(0);
 		glEnableVertexAttribArray(1);
+		
+		if (texture != -1) {
+			glEnableVertexAttribArray(2);
+		}
 
 		// Load the shape's vertex indices
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesPointer);
@@ -135,14 +158,30 @@ public abstract class Shape {
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 		glDisableVertexAttribArray(0);
 		glDisableVertexAttribArray(1);
+		
+		if (texture != -1) {
+			glDisableVertexAttribArray(2);
+		}
+		
 		glBindVertexArray(0);
 		glUseProgram(0);
+	}
+	
+	/** Applies a texture to the shape */
+	public void applyTexture(String textureLocation) {
+		texture = ResourceManager.loadTexture(textureLocation, GL_DIFFUSE);
+		setupShaders();
 	}
 	
 	/**
 	 * Releases the shape's memory.
 	 */
 	public void destroy() {
+		// Delete the shape's texture
+		if (texture != -1) {
+			glDeleteTextures(texture);
+		}
+		
 		// Detach the program and any shaders
 		glUseProgram(0);
 		glDetachShader(shaderProgram, vertexShader);
@@ -179,10 +218,17 @@ public abstract class Shape {
 	 */
 	private void setupShaders() {
 		// Load the shaders
-		vertexShader = loadShader("src/graphics/VertexShader.glsl",
-				GL_VERTEX_SHADER);
-		fragmentShader = loadShader("src/graphics/FragmentShader.glsl",
-				GL_FRAGMENT_SHADER);
+		if (texture != -1) {
+			vertexShader = loadShader("src/graphics/VertexShaderTextured.glsl",
+					GL_VERTEX_SHADER);
+			fragmentShader = loadShader("src/graphics/FragmentShaderTextured.glsl",
+					GL_FRAGMENT_SHADER);
+		} else {
+			vertexShader = loadShader("src/graphics/VertexShader.glsl",
+					GL_VERTEX_SHADER);
+			fragmentShader = loadShader("src/graphics/FragmentShader.glsl",
+					GL_FRAGMENT_SHADER);
+		}
 		
 		// Create a new shader program and add the two shaders to it
 		shaderProgram = glCreateProgram();
@@ -191,7 +237,11 @@ public abstract class Shape {
 
 		// Bind the two attribute locations to the shader program
 		glBindAttribLocation(shaderProgram, 0, "in_Position");
-		glBindAttribLocation(shaderProgram, 1, "in_Color");
+		glBindAttribLocation(shaderProgram, 1, "in_Colour");
+		
+		if (texture != -1) {
+			glBindAttribLocation(shaderProgram, 2, "in_TexturePos");
+		}
 		
 		// Link and validate the shader program
 		glLinkProgram(shaderProgram);
