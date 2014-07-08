@@ -218,5 +218,44 @@ public class Vertex {
 	public float[] st() {
 		return new float[] {tex[0], tex[1]};
 	}
+	
+	
+	/**
+	 * Sets the vertex's x position.
+	 * @param x - the new x position
+	 */
+	public void setX(float x) {
+		this.pos[0] = (x * 2) - 1;
+	}
+	
+	/**
+	 * Sets the vertex's y position.
+	 * @param y - the new y position
+	 */
+	public void setY(float y) {
+		this.pos[1] = ((y * 2) - 1) * -1;
+	}
+	
+	/**
+	 * Sets the vertex's z position.
+	 * @param z - the new z position
+	 */
+	public void setZ(float z) {
+		this.pos[2] = z;
+	}
+	
+	/**
+	 * Sets the vertex's x, y, z and w positions.
+	 * @param x - the new x position
+	 * @param y - the new y position
+	 * @param z - the new z position
+	 * @param w - the new w position
+	 */
+	public void setXYZW(float x, float y, float z, float w) {
+		this.pos[0] = (x * 2) - 1;
+		this.pos[1] = ((y * 2) - 1) * -1;
+		this.pos[2] = z;
+		this.pos[3] = w;
+	}
 
 }

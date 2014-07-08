@@ -21,6 +21,12 @@ import org.lwjgl.BufferUtils;
  * The low-level shape implementation.
  */
 public abstract class Shape {
+	
+	/** The shape's vertices */
+	private Vertex[] vertices;
+	
+	/** The shape's vertex buffer */
+	private FloatBuffer verticesBuffer;
 
 	/** The VAO object pointer */
 	private final int objectPointer;
@@ -56,11 +62,14 @@ public abstract class Shape {
 		// Set the texture to a default value
 		texture = -1;
 		
+		// Store the original vertices
+		this.vertices = vertices;
+		
 		// Store the number of indices used to define the shape
 		indicesCount = indexArray.length;
 		
 		// Create a buffer to hold the vertex properties
-		FloatBuffer verticesBuffer = BufferUtils.createFloatBuffer(
+		verticesBuffer = BufferUtils.createFloatBuffer(
 				vertices.length * 10);
 		
 		// Put the vertex properties into the buffer
@@ -167,10 +176,34 @@ public abstract class Shape {
 		glUseProgram(0);
 	}
 	
-	/** Applies a texture to the shape */
+	/**
+	 * Applies a texture to the shape.
+	 */
 	public void applyTexture(String textureLocation) {
 		texture = ResourceManager.loadTexture(textureLocation, GL_DIFFUSE);
 		setupShaders();
+	}
+	
+	/**
+	 * Resets a shape's vertices.
+	 */
+	public void resetVertices() {
+		// Load the VBO
+		glBindBuffer(GL_ARRAY_BUFFER, verticesPointer);
+
+		// Update the vertices buffer
+		for (int i = 0; i < vertices.length; i++) {
+			verticesBuffer.rewind();
+			verticesBuffer.put(vertices[i].xyzw());
+			verticesBuffer.put(vertices[i].rgba());
+			verticesBuffer.put(vertices[i].st());
+			verticesBuffer.flip();
+
+			glBufferSubData(GL_ARRAY_BUFFER, i * 40, verticesBuffer);
+		}
+
+		// Clear the VBO
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 	
 	/**
@@ -219,14 +252,18 @@ public abstract class Shape {
 	private void setupShaders() {
 		// Load the shaders
 		if (texture != -1) {
-			vertexShader = loadShader("src/graphics/VertexShaderTextured.glsl",
+			vertexShader = loadShader(
+					"src/resources/shaders/VertexShaderTextured.glsl",
 					GL_VERTEX_SHADER);
-			fragmentShader = loadShader("src/graphics/FragmentShaderTextured.glsl",
+			fragmentShader = loadShader(
+					"src/resources/shaders/FragmentShaderTextured.glsl",
 					GL_FRAGMENT_SHADER);
 		} else {
-			vertexShader = loadShader("src/graphics/VertexShader.glsl",
+			vertexShader = loadShader(
+					"src/resources/shaders/VertexShader.glsl",
 					GL_VERTEX_SHADER);
-			fragmentShader = loadShader("src/graphics/FragmentShader.glsl",
+			fragmentShader = loadShader(
+					"src/resources/shaders/FragmentShader.glsl",
 					GL_FRAGMENT_SHADER);
 		}
 		
@@ -283,6 +320,14 @@ public abstract class Shape {
 		glCompileShader(shaderID);
 
 		return shaderID;
+	}
+	
+	/**
+	 * Gets the shape's constituent vertices.
+	 * @return the shape's constituent vertices
+	 */
+	public Vertex[] vertices() {
+		return vertices;
 	}
 
 }
