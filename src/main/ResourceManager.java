@@ -1,7 +1,5 @@
 package main;
 
-import java.awt.Font;
-import java.awt.FontFormatException;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,12 +9,12 @@ import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.*;
 import static org.lwjgl.opengl.GL30.*;
 
-import org.newdawn.slick.TrueTypeFont;
-import org.newdawn.slick.util.ResourceLoader;
-
 import de.matthiasmann.twl.utils.PNGDecoder;
 import de.matthiasmann.twl.utils.PNGDecoder.Format;
 
+/**
+ * Manages resources.
+ */
 public abstract class ResourceManager {
 	
 	/** The first example texture location */
@@ -24,61 +22,19 @@ public abstract class ResourceManager {
 	
 	/** The second example texture location */
 	public static final String TEX2 = "src/resources/textures/texture2.png";
-	
-	/** The main font template */
-	private static Font mainFontTemplate;
-	
-	/** The main font */
-	private static TrueTypeFont mainFont;
 
 	/**
 	 * Loads resources.
 	 */
 	public static void load() {
-		// Load the font templates
-		InputStream inputStream =
-				ResourceLoader.getResourceAsStream(
-						"resources/fonts/frutiger.ttf");
-		
-		try {
-			mainFontTemplate = Font.createFont(
-					Font.TRUETYPE_FONT, inputStream);
-			mainFontTemplate = mainFontTemplate.deriveFont(24f);
-		} catch (FontFormatException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		//TODO: Load resources
 	}
 	
 	/**
 	 * Loads resources which require an OpenGL context.
 	 */
 	public static void loadOpenGLDependant() {
-		// Create the true-type font
-		try {
-			mainFont = new TrueTypeFont(mainFontTemplate, true);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
-	
-	/**
-	 * Gets the main font.
-	 * @return the main font
-	 */
-	public static TrueTypeFont mainFont() {
-		return mainFont;
-	}
-	
-	/**
-	 * Sets the font size of the main font.
-	 * @param size - the size to draw the main font
-	 */
-	public static void setMainFontSize(int size) {
-		mainFontTemplate = mainFontTemplate.deriveFont((float) size);
-		mainFont = new TrueTypeFont(mainFontTemplate, true);
+		//TODO: Load OpenGL-dependent resources
 	}
 	
 	
@@ -97,7 +53,7 @@ public abstract class ResourceManager {
 			// Open the PNG file
 			InputStream inStream = new FileInputStream(filename);
 
-			// Create a PNG decoder to decde the texture file
+			// Create a PNG decoder to decode the texture file
 			PNGDecoder decoder = new PNGDecoder(inStream);
 
 			// Get the texture's width and height

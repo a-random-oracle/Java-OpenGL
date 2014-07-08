@@ -1,7 +1,7 @@
 package graphics;
 
 /**
- * Represents a circle.
+ * Represents an ellipse.
  */
 public class Ellipse extends Polygon {
 	
