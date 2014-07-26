@@ -32,9 +32,37 @@ public class Polygon extends Shape {
 	 */
 	public Polygon(Vertex centre, float radius, int vertices) {
 		super(formIndexArray(vertices),
-				createVertices(centre, radius,
-						(float) (radius * Main.widthHeightRatio()),
-						vertices));
+				createVertices(centre, radius, vertices));
+	}
+	
+	/**
+	 * Creates a new polygon.
+	 * @param centre - the centre of the ellipse
+	 * @param xRadius - the distance between the centre of the ellipse
+	 * and the vertices (horizontally)
+	 * @param yRadius - the distance between the centre of the ellipse
+	 * and the vertices (vertically)
+	 * @param vertices - the number of vertices to use to specify the
+	 * polygon
+	 */
+	public Polygon(Vertex centre, float xRadius, float yRadius,
+			int vertices, float rotation) {
+		super(formIndexArray(vertices),
+				createVertices(centre, xRadius, yRadius, vertices, rotation));
+	}
+	
+	/**
+	 * Creates a new polygon.
+	 * @param centre - the centre of the ellipse
+	 * @param radius - the distance between the centre of the ellipse
+	 * and the vertices
+	 * @param vertices - the number of vertices to use to specify the
+	 * polygon
+	 */
+	public Polygon(Vertex centre, float radius,
+			int vertices, float rotation) {
+		super(formIndexArray(vertices),
+				createVertices(centre, radius, vertices, rotation));
 	}
 	
 	
@@ -80,15 +108,16 @@ public class Polygon extends Shape {
 	
 	/**
 	 * Forms the vertex array for a specific number of vertices.
-	 * @param centre
+	 * @param centre - the centre of the polygon
 	 * @param xRadius
-	 * @param yRadius - the 
+	 * @param yRadius
 	 * @param vertices - the number of vertices which should be used
-	 * to define the polygon 
-	 * @return
+	 * to define the polygon
+	 * @param rotation - the rotation to apply to the polygon
+	 * @return the vertices from which the polygon can be constructed
 	 */
-	private static Vertex[] createVertices(Vertex centre, 
-			float xRadius, float yRadius, int vertices) {
+	public static Vertex[] createVertices(Vertex centre, 
+			float xRadius, float yRadius, int vertices, float rotation) {
 		Vertex[] verticesArray = new Vertex[vertices + 1];
 		
 		verticesArray[0] = centre;
@@ -97,7 +126,7 @@ public class Polygon extends Shape {
 		double halfPI = Math.PI / 2;
 		
 		for (int i = 0; i < vertices; i++) {
-            double angle = (i * segmentSize) - halfPI;
+            double angle = (i * segmentSize) - halfPI + rotation;
             verticesArray[i + 1] = new Vertex(
             		(float) (centre.relX() + (Math.cos(angle) * xRadius)),
             		(float) (centre.relY() + (Math.sin(angle) * yRadius)),
@@ -112,6 +141,67 @@ public class Polygon extends Shape {
         }
 		
 		return verticesArray;
+	}
+	
+	/**
+	 * Forms the vertex array for a specific number of vertices.
+	 * @param centre - the centre of the polygon
+	 * @param radius - the distance between the centre of the polygon and
+	 * its vertices
+	 * @param vertices - the number of vertices which should be used
+	 * to define the polygon
+	 * @param rotation - the rotation to apply to the polygon
+	 * @return the vertices from which the polygon can be constructed
+	 */
+	public static Vertex[] createVertices(Vertex centre, 
+			float radius, int vertices, float rotation) {
+		return createVertices(
+				centre,
+				radius,
+				(float) (radius * Main.widthHeightRatio()),
+				vertices,
+				rotation
+		);
+	}
+	
+	/**
+	 * Forms the vertex array for a specific number of vertices.
+	 * @param centre - the centre of the polygon
+	 * @param xRadius
+	 * @param yRadius
+	 * @param vertices - the number of vertices which should be used
+	 * to define the polygon
+	 * @return the vertices from which the polygon can be constructed
+	 */
+	public static Vertex[] createVertices(Vertex centre, 
+			float xRadius, float yRadius, int vertices) {
+		return createVertices(
+				centre,
+				xRadius,
+				yRadius,
+				vertices,
+				0
+		);
+	}
+	
+	/**
+	 * Forms the vertex array for a specific number of vertices.
+	 * @param centre - the centre of the polygon
+	 * @param radius - the distance between the centre of the polygon and
+	 * its vertices
+	 * @param vertices - the number of vertices which should be used
+	 * to define the polygon
+	 * @return the vertices from which the polygon can be constructed
+	 */
+	public static Vertex[] createVertices(Vertex centre, 
+			float radius, int vertices) {
+		return createVertices(
+				centre,
+				radius,
+				(float) (radius * Main.widthHeightRatio()),
+				vertices,
+				0
+		);
 	}
 	
 }
