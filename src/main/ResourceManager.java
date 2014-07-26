@@ -22,6 +22,9 @@ public abstract class ResourceManager {
 	
 	/** The second example texture location */
 	public static final String TEX2 = "src/resources/textures/texture2.png";
+	
+	/** The aircraft example texture location */
+	public static final String AIR_TEX = "src/resources/textures/aircraft.png";
 
 	/**
 	 * Loads resources.

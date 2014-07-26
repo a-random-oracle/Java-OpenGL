@@ -13,7 +13,8 @@ public class Rectangle extends Quad {
 	 */
 	public Rectangle(Vertex topLeft, float width, float height) {
 		super(topLeft,
-				new Vertex(topLeft.relX(),
+				new Vertex(
+						topLeft.relX(),
 						topLeft.relY() + height,
 						1,
 						topLeft.r(),
@@ -21,7 +22,8 @@ public class Rectangle extends Quad {
 						topLeft.b(),
 						topLeft.a()
 				),
-				new Vertex(topLeft.relX() + width,
+				new Vertex(
+						topLeft.relX() + width,
 						topLeft.relY() + height,
 						1,
 						topLeft.r(),
@@ -29,7 +31,8 @@ public class Rectangle extends Quad {
 						topLeft.b(),
 						topLeft.a()
 				),
-				new Vertex(topLeft.relX() + width,
+				new Vertex(
+						topLeft.relX() + width,
 						topLeft.relY(),
 						1,
 						topLeft.r(),

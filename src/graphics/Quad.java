@@ -19,10 +19,8 @@ public class Quad extends Shape {
 	 * @param vertex3 - the third vertex
 	 * @param vertex4 - the fourth vertex
 	 */
-	public Quad(Vertex vertex1, Vertex vertex2,
-			Vertex vertex3, Vertex vertex4) {
-		super(QUAD_INDEX_ARRAY, vertex1, vertex2,
-				vertex3, vertex4);
+	public Quad(Vertex vertex1, Vertex vertex2, Vertex vertex3, Vertex vertex4) {
+		super(QUAD_INDEX_ARRAY, vertex1, vertex2, vertex3, vertex4);
 	}
 	
 }
