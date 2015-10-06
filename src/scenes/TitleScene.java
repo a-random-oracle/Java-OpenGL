@@ -36,7 +36,7 @@ public class TitleScene extends Scene {
 				new Vertex(0.525f, 0.22f, 1f, 0, 0, 0, 1, 0)
 		);
 		
-		quad.applyTexture(ResourceManager.AIR_TEX);
+		quad.applyTexture(ResourceManager.TEX1);
 		
 		pentagon = new Polygon(
 				new Vertex(0.5f, 0.5f, 1f, 0.4f, 0.5f, 1),
